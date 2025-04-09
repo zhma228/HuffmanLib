@@ -73,5 +73,42 @@ namespace WindowsFormsApp1
                 MessageBox.Show("Файл сохранён!");
             }
         }
+
+
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            if (encoder == null || encoder.Tree == null)
+            {
+                MessageBox.Show("Сначала загрузите исходный текст, чтобы построить дерево Хаффмана.");
+                return;
+            }
+
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
+            ofd.Title = "Выберите файл с закодированным текстом";
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    string encodedText = File.ReadAllText(ofd.FileName).Replace("\r", "").Replace("\n", "").Trim();
+
+                    string decoded = encoder.DecodeText(encodedText);
+
+                    // Выводим каждую строку в listBoxDecoded
+                    listBoxDecoded.Items.Clear();
+
+                    foreach (string line in decoded.Split('\n'))
+                    {
+                        listBoxDecoded.Items.Add(line);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка при декодировании: " + ex.Message);
+                }
+            }
+        }
     }
 }
