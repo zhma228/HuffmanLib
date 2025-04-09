@@ -105,22 +105,49 @@ namespace HuffmanLib
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine("Таблица Хаффмана:");
-            sb.AppendLine("Символ\tЧастота\tКод");
+            //sb.AppendLine("Таблица Хаффмана:");
+            //sb.AppendLine("Символ\tЧастота\tКод");
 
-            foreach (var pair in FrequencyTable)
-            {
-                string symbol = GetDisplayChar(pair.Key);
-                sb.AppendLine($"{symbol}\t{pair.Value}\t{Tree.Codes[pair.Key]}");
-            }
+            //foreach (var pair in FrequencyTable)
+            //{
+            //    string symbol = GetDisplayChar(pair.Key);
+            //    sb.AppendLine($"{symbol}\t{pair.Value}\t{Tree.Codes[pair.Key]}");
+            //}
 
-            sb.AppendLine();
-            sb.AppendLine("Длина закодированного текста: " + EncodedText.Length + " бит");
-            sb.AppendLine();
-            sb.AppendLine("Закодированный текст:");
+            //sb.AppendLine();
+            ////sb.AppendLine("Длина закодированного текста: " + EncodedText.Length + " бит");
+            ////sb.AppendLine();
+            //sb.AppendLine("Закодированный текст:");
             sb.AppendLine(EncodedText);
 
             File.WriteAllText(filePath, sb.ToString());
+
+        }
+        public string DecodeText(string encodedText)
+        {
+            if (Tree == null || Tree.Root == null)
+                throw new InvalidOperationException("Дерево Хаффмана не построено. Сначала вызовите AnalyzeText.");
+
+            StringBuilder decoded = new StringBuilder();
+            HuffmanNode current = Tree.Root;
+
+            foreach (char bit in encodedText)
+            {
+                if (bit == '0')
+                    current = current.Left;
+                else if (bit == '1')
+                    current = current.Right;
+                else
+                    throw new InvalidOperationException("Код содержит недопустимые символы. Ожидались только '0' и '1'.");
+
+                if (current.IsLeaf)
+                {
+                    decoded.Append(current.Symbol.Value);
+                    current = Tree.Root;
+                }
+            }
+
+            return decoded.ToString();
         }
 
         private string GetDisplayChar(char c)
